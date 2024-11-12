@@ -7,8 +7,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 //the first change
-  //the second change
-  //third change in master
+  //the second change (neither feature)
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
