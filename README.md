@@ -55,7 +55,6 @@ class Todo {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'title': title,
       'description': description,
       'isCompleted': isCompleted ? 1 : 0,
