@@ -76,7 +76,7 @@ class Todo {
 ```
 
 ## 4. Database Helper Class
-
+```dart
 // Create a database helper class to manage database operations:
 // This class provides a singleton instance to interact with the SQLite database.
 // It handles database initialization, creation of tables, and CRUD operations
