@@ -35,6 +35,8 @@ Let's create a practical example with a `Todo` model to demonstrate SQFlite conc
 
 ```dart
 // Model class representing a Todo item
+// This class defines the structure of a Todo object, including its properties (id, title, description, isCompleted).
+// It also includes methods to convert a Todo object to a map for database storage and vice-versa.
 class Todo {
   final int? id;
   final String title;
@@ -49,6 +51,8 @@ class Todo {
   });
 
   // Convert a Todo object into a Map for database storage
+  // Boolean values are converted to integers (1 for true, 0 for false) for SQLite compatibility.
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -58,7 +62,8 @@ class Todo {
     };
   }
 
-  // Create a Todo object from a Map
+  // Create a Todo object from a Map retrieved from the database.
+  // Integer values for 'isCompleted' are converted back to boolean values.
   factory Todo.fromMap(Map<String, dynamic> map) {
     return Todo(
       id: map['id'],
@@ -72,16 +77,20 @@ class Todo {
 
 ## 4. Database Helper Class
 
-Create a database helper class to manage database operations:
-
-```dart
+// Create a database helper class to manage database operations:
+// This class provides a singleton instance to interact with the SQLite database.
+// It handles database initialization, creation of tables, and CRUD operations
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
   DatabaseHelper._init();
 
-  // Ensure database is initialized
+ 
+  // Get the database instance, initializing it if necessary.
+  // If the database instance already exists, it is returned directly.
+  // Otherwise, the database is initialized and then returned.
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     
@@ -90,6 +99,8 @@ class DatabaseHelper {
   }
 
   // Initialize the database
+  // Gets the default database path for the platform.
+  // Opens the database at the given path, creating it if it doesn't exist.
   Future<Database> _initDatabase() async {
     // Get the default databases location
     String path = join(await getDatabasesPath(), 'todos_database.db');
@@ -103,6 +114,10 @@ class DatabaseHelper {
   }
 
   // Create database schema
+  // Defines the table schema, including column names, data types, and constraints.
+  // INTEGER specifies the ID is a whole number
+  // PRIMARY KEY indicates this is the unique identifier for each row
+  // AUTOINCREMENT is the key to automatic ID generation
   Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
       CREATE TABLE todos (
@@ -117,6 +132,9 @@ class DatabaseHelper {
   // CRUD Operations
 
   // Create (Insert) a new todo
+  // Converts the Todo object to a map and inserts it into the 'todos' table.
+  // Handles potential conflicts by replacing existing entries with the same id.
+
   Future<int> insertTodo(Todo todo) async {
     final db = await database;
     return await db.insert(
@@ -127,6 +145,8 @@ class DatabaseHelper {
   }
 
   // Read all todos
+  // Queries all rows from the 'todos' table and converts the list of maps to a list of Todo objects.
+
   Future<List<Todo>> getAllTodos() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('todos');
@@ -137,6 +157,9 @@ class DatabaseHelper {
   }
 
   // Update a todo
+  // Updates the row in the 'todos' table that matches the provided id.
+  // Uses the where clause and whereArgs to specify the row to update.
+
   Future<int> updateTodo(Todo todo) async {
     final db = await database;
     return await db.update(
@@ -148,6 +171,8 @@ class DatabaseHelper {
   }
 
   // Delete a todo
+  // Deletes the row from the 'todos' table that matches the provided id.
+
   Future<int> deleteTodo(int id) async {
     final db = await database;
     return await db.delete(
@@ -158,6 +183,10 @@ class DatabaseHelper {
   }
 
   // Complex Query: Find completed todos
+  // Retrieve completed todos from the database.
+  // Queries the 'todos' table for rows where 'isCompleted' is true (represented as 1).
+  // Converts the results to a list of Todo objects.
+
   Future<List<Todo>> getCompletedTodos() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -172,6 +201,7 @@ class DatabaseHelper {
   }
 
   // Close the database
+  // This is important to release resources and prevent issues.
   Future<void> closeDatabase() async {
     final db = await database;
     await db.close();
